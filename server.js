@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const db = require('./db');
 const bodyParser = require('body-parser');
@@ -10,7 +11,7 @@ const AWS = require('aws-sdk');
 const axios = require('axios');
 const Crop = require('./Models/Crop'); // Update with the correct path to your User model
 const upload = multer({ dest: 'uploads/' }); // Temporary file storage
-
+app.use(cors());
 // Configure AWS S3
 AWS.config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -48,6 +49,8 @@ app.post('/CropDisease', upload.single('Pic'), async (req, res) => {
         if (!file) {
             return res.status(400).json({ message: 'No file uploaded' });
         }
+        // console.log(file)
+        // console.log(typeof file)
         
         // Upload file to S3
         const result = await uploadFileToS3(file);
@@ -64,7 +67,7 @@ app.post('/CropDisease', upload.single('Pic'), async (req, res) => {
         
         const data = await crop.save();
         
-        res.status(200).json({ disease: response.data.class });
+        res.status(200).json({ disease:response.data.class });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: 'Internal Server Error', error: err.message });
