@@ -19,7 +19,8 @@ loaded_model = tf.keras.models.load_model('C:/Users/rajya/Documents/Agri/6.keras
 
 
 # Define class names as per your model
-CLASS_NAMES = ["Early Blight", "Late Blight", "Healthy"]
+CLASS_NAMES = ["Early Blight(Alternaria solani)", "Late Blight(Phytophthora infestans)", "Healthy"]
+Treatment=["Fungicide Application: Apply fungicides such as chlorothalonil or mancozeb at the first sign of disease. Repeat applications as per the product instructions.Remove Infected Leaves: Regularly inspect plants and remove any infected leaves to reduce the spread of the disease.", "Remove Infected Plants: Remove and destroy infected plants and tubers immediately to prevent the spread.Fungicide Application: Use fungicides like metalaxyl, copper-based fungicides. .Mulching: Use straw or plastic mulch to prevent soil from splashing onto the leaves, which can spread spores. ", "Dont worry your plant is fine."]
 
 class ImageRequest(BaseModel):
     url: str
@@ -44,10 +45,12 @@ async def predict(request: ImageRequest):
         predictions = loaded_model.predict(image_array)
         predicted_class = CLASS_NAMES[np.argmax(predictions[0])]
         confidence = np.max(predictions[0])
+        diagnosis=Treatment[np.argmax(predictions[0])]
 
         return {
             "class": predicted_class,
-            "confidence": float(confidence)
+            "confidence": float(confidence),
+            "diagnosis":diagnosis
         }
 
     except requests.HTTPError as e:

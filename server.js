@@ -49,7 +49,7 @@ app.post('/CropDisease', upload.single('Pic'), async (req, res) => {
         if (!file) {
             return res.status(400).json({ message: 'No file uploaded' });
         }
-        // console.log(file)
+         console.log(file)
         // console.log(typeof file)
         
         // Upload file to S3
@@ -64,10 +64,11 @@ app.post('/CropDisease', upload.single('Pic'), async (req, res) => {
         crop.DiseasePic = result.Location; // S3 URL
         crop.DiseaseDiagnosis = response.data.class;
         crop.Confidence=response.data.confidence
+        crop.DiseaseDiagnosis=response.data.diagnosis 
         
         const data = await crop.save();
         
-        res.status(200).json({ disease:response.data.class });
+        res.status(200).json({ Disease:response.data.class , Score: response.data.confidence , Diagnosis:response.data.diagnosis });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: 'Internal Server Error', error: err.message });
